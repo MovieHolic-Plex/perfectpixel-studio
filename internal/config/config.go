@@ -22,6 +22,7 @@ type Settings struct {
 	OpenRouter ProviderCfg `json:"openrouter"`
 	Fal        ProviderCfg `json:"fal"`
 	BytePlus   ProviderCfg `json:"byteplus"`
+	Duckcoding ProviderCfg `json:"duckcoding"`
 
 	// 레거시 필드 (v1 → 마이그레이션용)
 	LegacyAPIKey string `json:"apiKey,omitempty"`
@@ -37,6 +38,8 @@ func (s *Settings) Cfg(provider string) *ProviderCfg {
 		return &s.Fal
 	case "byteplus":
 		return &s.BytePlus
+	case "duckcoding":
+		return &s.Duckcoding
 	default:
 		return &s.Gemini
 	}
@@ -101,6 +104,12 @@ func Load() Settings {
 	if s.BytePlus.APIKey == "" {
 		s.BytePlus.APIKey = firstNonEmpty(env["BYTEPLUS_API_KEY"], env["ARK_API_KEY"])
 	}
+	if s.Duckcoding.APIKey == "" {
+		s.Duckcoding.APIKey = firstNonEmpty(env["DUCKCODING_API_KEY"], env["IMAGE_PROVIDER_API_KEY"])
+	}
+	if s.Duckcoding.Model == "" {
+		s.Duckcoding.Model = firstNonEmpty(env["DUCKCODING_IMAGE_MODEL"], env["IMAGE_PROVIDER_IMAGE_MODEL"])
+	}
 
 	// 활성 프로바이더 자동 선택: 키가 있는 첫 프로바이더
 	if s.Provider == "" {
@@ -113,6 +122,8 @@ func Load() Settings {
 			s.Provider = "fal"
 		case s.BytePlus.APIKey != "":
 			s.Provider = "byteplus"
+		case s.Duckcoding.APIKey != "":
+			s.Provider = "duckcoding"
 		default:
 			s.Provider = "gemini"
 		}
@@ -155,7 +166,7 @@ func loadEnvFallback() map[string]string {
 	}
 
 	// 2) OS 환경변수 (파일보다 우선)
-	for _, key := range []string{"GEMINI_API_KEY", "GOOGLE_API_KEY", "OPENROUTER_API_KEY", "FAL_KEY", "FAL_API_KEY", "BYTEPLUS_API_KEY", "ARK_API_KEY"} {
+	for _, key := range []string{"GEMINI_API_KEY", "GOOGLE_API_KEY", "OPENROUTER_API_KEY", "FAL_KEY", "FAL_API_KEY", "BYTEPLUS_API_KEY", "ARK_API_KEY", "DUCKCODING_API_KEY", "IMAGE_PROVIDER_API_KEY", "DUCKCODING_IMAGE_MODEL", "IMAGE_PROVIDER_IMAGE_MODEL", "DUCKCODING_BASE_URL", "IMAGE_PROVIDER_BASE_URL"} {
 		if v := os.Getenv(key); v != "" {
 			out[key] = v
 		}

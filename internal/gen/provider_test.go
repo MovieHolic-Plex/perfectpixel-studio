@@ -17,6 +17,7 @@ func TestNewFactory(t *testing.T) {
 		{"openrouter", "*gen.OpenRouter"},
 		{"fal", "*gen.Fal"},
 		{"byteplus", "*gen.BytePlus"},
+		{"duckcoding", "*gen.Duckcoding"},
 	}
 	for _, c := range cases {
 		p, err := New(c.provider, "test-key", "")
@@ -42,6 +43,8 @@ func typeName(v any) string {
 		return "*gen.Fal"
 	case *BytePlus:
 		return "*gen.BytePlus"
+	case *Duckcoding:
+		return "*gen.Duckcoding"
 	default:
 		return "?"
 	}
@@ -59,6 +62,9 @@ func TestDefaultModelFor(t *testing.T) {
 	}
 	if DefaultModelFor("byteplus") != "seedream-4-0-250828" {
 		t.Fatal("byteplus 기본 모델 오류")
+	}
+	if DefaultModelFor("duckcoding") != "gpt-image-2" {
+		t.Fatal("duckcoding 기본 모델 오류")
 	}
 }
 

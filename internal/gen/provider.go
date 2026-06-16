@@ -16,10 +16,11 @@ const (
 	ProviderOpenRouter = "openrouter"
 	ProviderFal        = "fal"
 	ProviderBytePlus   = "byteplus"
+	ProviderDuckcoding = "duckcoding"
 )
 
 // SupportedProviders는 지원 프로바이더 식별자 목록입니다 (UI 노출 순서).
-var SupportedProviders = []string{ProviderGemini, ProviderOpenRouter, ProviderFal, ProviderBytePlus}
+var SupportedProviders = []string{ProviderGemini, ProviderOpenRouter, ProviderFal, ProviderBytePlus, ProviderDuckcoding}
 
 // modelCatalog는 프로바이더별 선택 가능한 이미지 모델 목록입니다 (최신 모델이 맨 앞).
 var modelCatalog = map[string][]string{
@@ -43,6 +44,9 @@ var modelCatalog = map[string][]string{
 		"seedream-4-0-250828",     // Seedream 4.0 (최신)
 		"seedream-3-0-t2i-250415", // Seedream 3.0
 		"seededit-3-0-i2i-250628", // SeedEdit 3.0 (이미지 편집)
+	},
+	ProviderDuckcoding: {
+		"gpt-image-2",
 	},
 }
 
@@ -71,6 +75,8 @@ func DefaultModelFor(provider string) string {
 		return "fal-ai/nano-banana-pro"
 	case ProviderBytePlus:
 		return "seedream-4-0-250828"
+	case ProviderDuckcoding:
+		return "gpt-image-2"
 	default:
 		return DefaultModel // gemini-3-pro-image (Nano Banana Pro)
 	}
@@ -85,6 +91,8 @@ func ProviderLabel(provider string) string {
 		return "fal.ai"
 	case ProviderBytePlus:
 		return "BytePlus"
+	case ProviderDuckcoding:
+		return "Duckcoding"
 	default:
 		return "Gemini"
 	}
@@ -104,6 +112,8 @@ func New(provider, apiKey, model string) (Provider, error) {
 		return NewFal(apiKey, model), nil
 	case ProviderBytePlus:
 		return NewBytePlus(apiKey, model), nil
+	case ProviderDuckcoding:
+		return NewDuckcoding(apiKey, model), nil
 	default:
 		return nil, fmt.Errorf("지원하지 않는 프로바이더입니다: %s", provider)
 	}
